@@ -20,7 +20,9 @@ export type Product = {
 };
 
 // Na start produkty są w JSON-ie w repo; docelowo ten moduł będzie czytał z Sanity.
-const products = data as Product[];
+// Przy eksporcie na GitHub Pages ścieżki zdjęć potrzebują prefiksu basePath.
+const base = process.env.NEXT_PUBLIC_BASE_PATH ?? '';
+const products = (data as Product[]).map((p) => ({ ...p, image: base + p.image }));
 
 export const categoryLabels: Record<Category, string> = {
   miod: 'Miody',

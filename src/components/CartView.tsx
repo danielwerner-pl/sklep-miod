@@ -2,6 +2,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { formatPrice, type Product } from '@/lib/products';
 import { deliveryOptions, FREE_SHIPPING_FROM, shippingCost, type DeliveryMethod, type Paczkomat } from '@/lib/shipping';
@@ -13,6 +14,7 @@ type CartProduct = Pick<Product, 'slug' | 'name' | 'price' | 'image' | 'weight' 
 
 export function CartView({ products }: { products: CartProduct[] }) {
   const { items, ready, setQty, remove } = useCart();
+  const router = useRouter();
   const [method, setMethod] = useState<DeliveryMethod>('paczkomat');
   const [paczkomat, setPaczkomat] = useState<Paczkomat | null>(null);
   const [loading, setLoading] = useState(false);
@@ -47,6 +49,11 @@ export function CartView({ products }: { products: CartProduct[] }) {
       return;
     }
     setLoading(true);
+    if (process.env.NEXT_PUBLIC_STATIC_DEMO === '1') {
+      // Wersja statyczna (GitHub Pages) nie ma API – od razu potwierdzenie demo.
+      router.push('/zamowienie/potwierdzenie');
+      return;
+    }
     try {
       const res = await fetch('/api/checkout', {
         method: 'POST',

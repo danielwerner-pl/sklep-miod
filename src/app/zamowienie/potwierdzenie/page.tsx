@@ -9,6 +9,9 @@ export const metadata: Metadata = { title: 'Dziękujemy za zamówienie', robots:
 type Props = { searchParams: Promise<{ session_id?: string; demo?: string }> };
 
 export default async function ConfirmationPage({ searchParams }: Props) {
+  // Statyczny eksport nie ma searchParams ani Stripe – zawsze potwierdzenie demo.
+  if (process.env.NEXT_PUBLIC_STATIC_DEMO === '1') return <DemoConfirmation reason="To wersja demonstracyjna sklepu – płatność została pominięta." />;
+
   const { session_id, demo } = await searchParams;
   const order = session_id ? await loadOrder(session_id) : null;
 
@@ -21,18 +24,7 @@ export default async function ConfirmationPage({ searchParams }: Props) {
     );
   }
 
-  if (!order) {
-    return (
-      <Shell title="Dziękujemy za zamówienie!">
-        <ClearCart />
-        <p className="rounded-xl bg-honey-light/40 px-4 py-3 text-sm">
-          <strong>Tryb demo:</strong> brak kluczy Stripe w <code>.env.local</code>, więc płatność została pominięta.
-        </p>
-        <p className="mt-6 text-lg text-ink-soft">Potwierdzenie wyślemy na Twój e-mail. Paczka wyjdzie z pasieki w ciągu 24 godzin roboczych.</p>
-        <Link href="/sklep" className="btn-primary mt-10">Wróć do sklepu</Link>
-      </Shell>
-    );
-  }
+  if (!order) return <DemoConfirmation reason="Brak kluczy Stripe w .env.local, więc płatność została pominięta." />;
 
   return (
     <Shell title={order.paid ? 'Dziękujemy za zamówienie!' : 'Czekamy na potwierdzenie płatności'}>
@@ -74,6 +66,19 @@ export default async function ConfirmationPage({ searchParams }: Props) {
         </div>
       </div>
 
+      <Link href="/sklep" className="btn-primary mt-10">Wróć do sklepu</Link>
+    </Shell>
+  );
+}
+
+function DemoConfirmation({ reason }: { reason: string }) {
+  return (
+    <Shell title="Dziękujemy za zamówienie!">
+      <ClearCart />
+      <p className="rounded-xl bg-honey-light/40 px-4 py-3 text-sm">
+        <strong>Tryb demo:</strong> {reason}
+      </p>
+      <p className="mt-6 text-lg text-ink-soft">Potwierdzenie wyślemy na Twój e-mail. Paczka wyjdzie z pasieki w ciągu 24 godzin roboczych.</p>
       <Link href="/sklep" className="btn-primary mt-10">Wróć do sklepu</Link>
     </Shell>
   );

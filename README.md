@@ -12,6 +12,12 @@ npm run dev        # http://localhost:3000
 Bez `.env.local` sklep działa w pełni poza płatnością: „Przejdź do płatności” prowadzi od razu
 na stronę potwierdzenia z dopiskiem „Tryb demo”. Paczkomat wpisuje się ręcznie (kod, np. `KRA01M`).
 
+## Wersja demo na GitHub Pages
+
+https://danielwerner-pl.github.io/sklep-miod/ – budowana automatycznie po każdym pushu na `main`
+([workflow](.github/workflows/pages.yml)). To statyczny eksport (`GITHUB_PAGES=1`): bez tras API,
+płatność zawsze kończy się potwierdzeniem demo, zdjęcia bez optymalizacji Next.js.
+
 ## Później
 
 - **Stripe:** skopiuj `.env.example` → `.env.local`, wpisz `sk_test_…`. Checkout: BLIK, Przelewy24, karta (PLN).
